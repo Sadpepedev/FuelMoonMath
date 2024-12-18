@@ -3,101 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Legion ROI Calculator</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Fuel Seed Round ROI Calculator</title>
   <style>
-    /* Fade-in animation */
-    .fade-in {
-      animation: fadeIn 1s ease-in-out;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #1a202c;
+      color: #e2e8f0;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #2d3748;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    input, button {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    input {
+      background: #4a5568;
+      color: #fff;
+    }
+    button {
+      background: #3182ce;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2b6cb0;
+    }
+    .result {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #4a5568;
+      border-radius: 4px;
     }
   </style>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans">
+<body>
+  <div class="container">
+    <h1>Fuel Seed Round ROI Calculator</h1>
+    <p>Enter your initial investment and adjust the multiplier to calculate your ROI.</p>
 
-  <!-- Header -->
-  <header class="bg-gray-800 text-center py-8 shadow-lg">
-    <h1 class="text-3xl font-bold text-white">Calculate Your Legion RoI</h1>
-    <p class="text-gray-400 mt-2">Enter your investment and estimate potential ROI</p>
-  </header>
-
-  <!-- Main Container -->
-  <div class="container mx-auto mt-10 px-6 py-8 bg-gray-800 rounded-lg shadow-lg max-w-lg text-center">
     <!-- Input Fields -->
-    <div class="space-y-6">
-      <div>
-        <label for="investment" class="block mb-2 font-semibold text-blue-300">
-          Initial Investment ($)
-        </label>
-        <input type="number" id="investment" placeholder="Enter amount (e.g., 5000)" 
-          class="w-full p-3 rounded-md bg-gray-700 text-gray-100 focus:ring-2 focus:ring-blue-400 focus:outline-none">
-      </div>
-      <div>
-        <label for="scale" class="block mb-2 font-semibold text-blue-300">
-          Growth Scale (1.2x to 15x)
-        </label>
-        <input type="range" id="scale" min="1.2" max="15" step="0.2" value="1.2" 
-          class="w-full">
-        <p class="text-gray-400 mt-2">Current Multiplier: <span id="scaleValue">1.2</span>x</p>
-      </div>
-      <button onclick="calculateROI()" 
-        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-md transition">
-        Calculate ROI
-      </button>
-    </div>
+    <label for="investment">Initial Investment ($):</label>
+    <input type="number" id="investment" placeholder="Enter your investment">
+
+    <label for="multiplier">Multiplier (1.2x to 15x):</label>
+    <input type="range" id="multiplier" min="1.2" max="15" step="0.2" value="1.2" oninput="updateMultiplierLabel()">
+    <p>Current Multiplier: <span id="multiplierLabel">1.2</span>x</p>
+
+    <button onclick="calculateROI()">Calculate ROI</button>
 
     <!-- Results -->
-    <div id="results" class="fade-in mt-8 hidden bg-gray-700 p-6 rounded-lg shadow-lg text-center">
-      <h3 class="text-2xl font-bold text-blue-300 mb-4">Results</h3>
+    <div id="results" class="result" style="display: none;">
       <p><strong>Initial Investment:</strong> $<span id="initialInvestment"></span></p>
       <p><strong>FDV Balance:</strong> $<span id="fdvBalance"></span></p>
       <p><strong>ROI:</strong> $<span id="roi"></span></p>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="mt-10 text-center text-gray-500">
-    Built by <a href="#" class="text-blue-400 hover:underline">Your Name</a>
-  </footer>
-
-  <!-- Script -->
   <script>
-    // Constants
-    const FDV = 200000000; // FDV in dollars
+    const FDV = 200000000; // Fully Diluted Valuation
     const TOTAL_TOKENS = 10000000000; // Total tokens
     const TOKEN_COST = 0.02; // Cost per token in dollars
 
-    // Update slider value display
-    document.getElementById("scale").addEventListener("input", function () {
-      document.getElementById("scaleValue").textContent = this.value;
-    });
+    function updateMultiplierLabel() {
+      const multiplier = document.getElementById("multiplier").value;
+      document.getElementById("multiplierLabel").textContent = multiplier;
+    }
 
     function calculateROI() {
       const initialInvestment = parseFloat(document.getElementById("investment").value);
-      const multiplier = parseFloat(document.getElementById("scale").value);
+      const multiplier = parseFloat(document.getElementById("multiplier").value);
 
-      if (!initialInvestment || initialInvestment <= 0) {
+      if (isNaN(initialInvestment) || initialInvestment <= 0) {
         alert("Please enter a valid investment amount.");
         return;
       }
 
-      // FDV Balance Calculation
-      const totalTokensPurchased = initialInvestment / TOKEN_COST; // Number of tokens bought
+      // Calculate FDV balance
+      const totalTokensPurchased = initialInvestment / TOKEN_COST;
       const fdvBalance = totalTokensPurchased * (FDV / TOTAL_TOKENS) * multiplier;
 
-      // ROI Calculation
+      // Calculate ROI
       const roi = fdvBalance - initialInvestment;
 
-      // Display Results
+      // Update results
       document.getElementById("initialInvestment").textContent = initialInvestment.toFixed(2);
       document.getElementById("fdvBalance").textContent = fdvBalance.toFixed(2);
       document.getElementById("roi").textContent = roi.toFixed(2);
 
-      document.getElementById("results").classList.remove("hidden");
+      // Show results
+      document.getElementById("results").style.display = "block";
     }
   </script>
 </body>
